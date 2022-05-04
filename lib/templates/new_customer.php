@@ -11,7 +11,7 @@
 
     if( !is_wp_error( $wp_error ) ){
       update_user_meta( $wp_error, 'af_meta', $meta );
-      echo '<div class="notice notice-info is-dismissible"><p>Customer has been added.</p></div>';
+      echo '<div class="notice notice-info is-dismissible"><p>Customer has been updated.</p></div>';
     }
     else{
       foreach( $wp_error->errors as $errors ){
@@ -30,7 +30,25 @@
     'ID'  => array(
       'label'   => 'ID',
       'type'    => 'text',
-      'default' => 0
+    ),
+    'meta[title]' => array(
+      'label' => 'Title',
+      'type'  => 'select',
+      'options' => array(
+        'Mr'  => 'Mr',
+        'Mrs'  => 'Mrs',
+        'Miss'  => 'Miss',
+      ),
+    ),
+    'meta[language]' => array(
+      'label' => 'Language',
+      'type'  => 'select',
+      'options' => array(
+        'FR'  => 'FR',
+        'EN'  => 'EN',
+        'ES'  => 'ES',
+        'PT'  => 'PT'
+      ),
     ),
     'first_name' => array(
       'label' => 'First Name',
@@ -87,18 +105,21 @@
     ),
   );
 
+  $data = array();
+
   if( isset( $_GET[ 'id' ] ) && $_GET[ 'id' ] ){
     $user = get_user_by( 'ID', $_GET[ 'id' ] );
 
-    $form_fields['ID']['default'] = $_GET[ 'id' ];
-    $form_fields['first_name']['default'] = $user->user_firstname;
-    $form_fields['last_name']['default'] = $user->user_lastname;
-    $form_fields['user_email']['default'] = $user->user_email;
+    $data['ID'] = $_GET[ 'id' ];
+
+    $data['first_name'] = $user->user_firstname;
+    $data['last_name'] = $user->user_lastname;
+    $data['user_email'] = $user->user_email;
 
     $meta = get_user_meta( $_GET[ 'id' ], 'af_meta', true );
     if( is_array( $meta ) && count( $meta ) ){
       foreach( $meta as $slug => $value ){
-        $form_fields["meta[$slug]"]['default'] = $value;
+        $data["meta[$slug]"] = $value;
       }
     }
 
@@ -111,26 +132,37 @@
 <div class='wrap'>
   <h1><?php echo $button_text;?></h1>
   <form method='POST'>
-    <table class='form-table' role='presentation'><tbody>
+    <div style='display: grid; grid-template-columns: 1fr 1fr;'>
+      <?php
+        //$this->test( $data );
 
-    <?php foreach( $form_fields as $slug => $form_field ):?>
-      <tr class='row-<?php echo $slug;?>'>
-        <th scope='row'>
-          <label for='<?php echo $slug;?>'><?php echo $form_field['label'];?></label>
-        </th>
-        <td>
-          <input id='<?php echo $slug;?>' class='regular-text' type='<?php echo $form_field['type'];?>' name='<?php echo $slug;?>' value='<?php echo isset( $form_field['default'] ) ? $form_field['default'] : '';?>' />
-        </td>
-      </tr>
-    <?php endforeach;?>
-    </tbody></table>
+        foreach( $form_fields as $slug => $field ){
+          $wc_field = array(
+            'id'            => $slug,
+            'label'         => $field['label'],
+            'value'         => isset( $data[ $slug ] ) ? $data[ $slug ] : '',
+            'wrapper_class' => 'form-field-wide',
+          );
+
+          if( $field['type'] == 'select' ){
+            $wc_field['options'] = $field['options'];
+            woocommerce_wp_select( $wc_field );
+          }
+          else{
+            $wc_field['type'] = $field['type'];
+            woocommerce_wp_text_input( $wc_field );
+          }
+        }
+      ?>
+    </div>
     <p style='margin-top: 30px;'>
       <input class='button button-primary' type='submit' value='<?php echo $button_text;?>' />
     </p>
   </form>
 </div>
 <style>
-  .row-role, .row-ID{
+  .role_field, .ID_field{
     display: none;
   }
+  label{ display: block; }
 </style>

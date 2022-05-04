@@ -6,9 +6,12 @@ class ORDER extends BASE{
 
   function getDataForContract( $order_id ){
     $order = wc_get_order( $order_id );
-    $customer = $order->get_user();
+    $meta_order = get_post_meta( $order_id, 'af_meta', true );
 
-    $data = get_user_meta( $customer->ID, 'af_meta', true );
+    $customer = $order->get_user();
+    $meta_user = get_user_meta( $customer->ID, 'af_meta', true );
+
+    $data = array_merge( $meta_order, $meta_user );
     $data['order_id'] = $order_id;
     $data['last_name'] = $customer->user_lastname;
     $data['first_name'] = $customer->user_firstname;
@@ -51,6 +54,8 @@ class ORDER extends BASE{
 
   function generateContract( $order_id ){
     $data = $this->getDataForContract( $order_id );
+    //$this->test( $data );
+
     $newfileslug = 'af_contract_' . $data['order_id'];
     $pdf = PDF::getInstance();
     return $pdf->download( 'contract', $data, $newfileslug );

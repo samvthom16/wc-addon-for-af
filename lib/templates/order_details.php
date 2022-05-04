@@ -1,39 +1,101 @@
-<?php add_thickbox(); ?>
-<p class='form-field form-field-wide wc-customer-user'>
-  <!--a href="#TB_inline?width=600&height=450&inlineId=modal-window-id" class="thickbox">Add Customer</a-->
-  <a href="http://localhost/anurag/wp-admin/admin.php?page=new-wc-customer" class="thickbox">Add Customer</a-->
-</p>
+<!-- https://rudrastyh.com/woocommerce/customize-order-details.html -->
 
-<div id="modal-window-id" style="display:none;">
-  <?php
-    $form_fields = array(
-      'first_name' => array(
-        'label' => 'First Name',
-        'type'  => 'text'
-      ),
-      'last_name' => array(
-        'label' => 'Last Name',
-        'type'  => 'text'
-      ),
-      'user_email' => array(
-        'label' => 'Email Address',
-        'type'  => 'text'
+
+
+<br class="clear" />
+<br>
+<h3>Details<a href="#" class="edit_address">Edit</a></h3>
+
+<?php
+
+  $meta = get_post_meta( $order->get_id(), 'af_meta', true );
+
+  $fields = array(
+    'ref_rep' => array(
+      'type'  => 'text',
+      'label' => 'Ref. of the Representative:'
+    ),
+    'ref_car' => array(
+      'type'  => 'text',
+      'label' => 'Ref. CAR-2-EUROPE:'
+    ),
+    'date_start' => array(
+      'type'  => 'date',
+      'label' => 'Delivery Date:'
+    ),
+    'delivery_place' => array(
+      'type'  => 'text',
+      'label' => 'Delivery Place:'
+    ),
+    'date_end' => array(
+      'type'  => 'date',
+      'label' => 'Return Date:'
+    ),
+    'return_place' => array(
+      'type'  => 'text',
+      'label' => 'Return Place:'
+    ),
+    'flight_no' => array(
+      'type'  => 'text',
+      'label' => 'Flight Number:'
+    ),
+    'time_flight' => array(
+      'type'  => 'text',
+      'label' => 'Flight Time:'
+    ),
+    'time_flight_slot' => array(
+      'type'  => 'select',
+      'label' => 'Flight Time Slot:',
+      'options' => array(
+        ''          => 'Not Set',
+        'Morning'   => 'Morning',
+        'Afternoon' => 'Afternoon'
       )
-    );
-  ?>
-  <h2>Add Customer</h2>
+    ),
+    'purpose' => array(
+      'type'  => 'select',
+      'label' => 'Purpose:',
+      'options' => array(
+        ''                => 'Not Set',
+        'Tourist'         => 'Tourist',
+        'Student'         => 'Student',
+        'Mission Leaders' => 'Mission Leaders',
+        'Journalist'      => 'Journalist'
+      )
+    ),
+  );
 
-  <table class='form-table' role='presentation'><tbody>
+?>
 
-  <?php foreach( $form_fields as $slug => $form_field ):?>
-    <tr class='row-<?php echo $slug;?>'>
-      <th scope='row'>
-        <label for='<?php echo $slug;?>'><?php echo $form_field['label'];?></label>
-      </th>
-      <td>
-        <input id='<?php echo $slug;?>' required='true' class='regular-text' type='text' name='<?php echo $slug;?>' value='<?php echo isset( $form_field['default'] ) ? $form_field['default'] : '';?>' />
-      </td>
-    </tr>
+<div class="address" style='display:grid; grid-template-columns: 1fr 1fr;'>
+  <?php foreach( $fields as $slug => $field ):?>
+	<p>
+    <strong><?php echo $field['label'];?></strong>
+    <?php echo isset( $meta[ $slug ] ) ? $meta[ $slug ] : 'Not Set';?>
+  </p>
   <?php endforeach;?>
-  </tbody></table>
+</div>
+
+<div class="edit_address">
+  <?php
+    foreach( $fields as $slug => $field ){
+
+      $wc_field = array(
+        'name'          => "af_meta[$slug]",
+        'id'            => $slug,
+        'label'         => $field['label'],
+        'value'         => isset( $meta[ $slug ] ) ? $meta[ $slug ] : '',
+        'wrapper_class' => 'form-field-wide',
+      );
+
+      if( $field['type'] == 'select' ){
+        $wc_field['options'] = $field['options'];
+        woocommerce_wp_select( $wc_field );
+      }
+      else{
+        $wc_field['type'] = $field['type'];
+        woocommerce_wp_text_input( $wc_field );
+      }
+    }
+  ?>
 </div>

@@ -7,13 +7,21 @@ class ADMIN extends BASE{
   function __construct(){
     add_action( 'admin_menu', array( $this, 'add_menu' ) );
 
-    /*
+
     add_action( 'woocommerce_admin_order_data_after_order_details', function( $order ){
       include "templates/order_details.php";
     } );
-    */
 
-    //https://gist.github.com/bekarice/5233ed58c3a836064123b290463241c0
+    add_action( 'woocommerce_process_shop_order_meta', function( $order_id ){
+      if( isset( $_POST['af_meta'] ) ){
+        //$this->test( $_POST['af_meta'] );
+        update_post_meta( $order_id, 'af_meta', $_POST['af_meta'] );
+      }
+    } );
+
+
+
+
     add_action( 'woocommerce_order_actions', array( $this, 'add_order_actions' ) );
 
     add_action( 'woocommerce_order_action_af_generate_contract', array( $this, 'generateContract' ) );

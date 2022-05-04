@@ -1,5 +1,7 @@
 <?php
 
+add_filter( 'woocommerce_is_sold_individually', function(){ return true; } );
+
 add_filter( 'af_pdf_fields_contract', function( $fields ){
 
   $fields = array(
