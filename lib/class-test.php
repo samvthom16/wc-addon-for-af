@@ -86,19 +86,13 @@ class TEST extends BASE{
       'place'   => 'PARIS',
     );
 
-
     $pdf = PDF::getInstance();
-    $pdf->download( 'contract', $values );
+    echo $pdf->download( 'contract', $values );
   }
 
   function downloadOrderContract(){
     if( isset( $_GET[ 'order_id' ] ) ){
-
       echo ORDER::getInstance()->generateContract( $_GET[ 'order_id' ] );
-
-      
-
-
     }
   }
 
