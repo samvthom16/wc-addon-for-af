@@ -28,9 +28,9 @@ class ORDER extends BASE{
       $data['vehicle'] = $item->get_name();
     }
 
-    //$data['price'] = ;
-    $data['total_price'] = $order->get_total();
-    $data['advance_price'] = $order->get_total();
+    $data['price'] = wc_price( $data['price'], array( 'currency' => 'EUR' ) );
+    $data['total_price'] = wc_price( $order->get_total(), array( 'currency' => 'USD' ) );
+    $data['advance_price'] = wc_price( $order->get_total(), array( 'currency' => 'USD' ) );
 
     /* CALCULATION OF FEES - NOT NEEDED
     foreach( $order->get_fees() as $fee ){
@@ -47,7 +47,7 @@ class ORDER extends BASE{
     $data['due_price'] = $data['total_price'] - $data['advance_price'];
     */
 
-    $checkbox_fields = array( 'title', 'language' );
+    $checkbox_fields = array( 'title', 'language', 'purpose' );
     foreach( $checkbox_fields as $checkbox_field ){
       if( isset( $data[ $checkbox_field ] ) ){
         $new_slug = strtolower( $data[ $checkbox_field ] ) . '_check';
@@ -58,14 +58,14 @@ class ORDER extends BASE{
 
 
 
-    $data['date'] = date( "Y/m/d" );
-    $data['date'] = 'Paris';
+    $data['date'] = date( "Y-m-d" );
+    $data['place'] = 'Paris';
     return $data;
   }
 
   function generateContract( $order_id ){
     $data = $this->getDataForContract( $order_id );
-    //$this->test( $data );
+    $this->test( $data );
 
     $newfileslug = 'af_contract_' . $data['order_id'];
     $pdf = PDF::getInstance();
