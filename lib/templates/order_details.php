@@ -63,6 +63,10 @@
         'Journalist'      => 'Journalist'
       )
     ),
+    'price' => array(
+      'type'  => 'text',
+      'label' => 'Total price of the car (Euros):'
+    ),
   );
 
 ?>

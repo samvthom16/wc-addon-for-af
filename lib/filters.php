@@ -77,3 +77,18 @@ add_filter( 'af_pdf_fields_contract', function( $fields ){
 add_filter( 'af_pdf_filepath_contract', function( $filepath ){
   return AF_CONTRACT_TEMPLATE;
 } );
+
+add_action( 'admin_menu', function(){
+  global $menu, $submenu;
+
+  /*
+  echo '<pre>';
+  print_r( $menu );
+  echo '</pre>';
+  wp_die();
+  */
+
+  // Change WooCommerce to Store
+  $menu['55.5'][0] = 'Auto France';
+  $menu['55.5'][6] = 'dashicons-database-view';
+} );

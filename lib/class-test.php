@@ -79,8 +79,8 @@ class TEST extends BASE{
       'accessories_price' => '0',
       'delivery_price'    => '0',
       'return_price'      => '0',
-      'total_price'       => '47167',
-      'due_price'         => '45000',
+      'total_price'       => '47,167',
+      'due_price'         => '',
 
       'date'    => '29 April 2022',
       'place'   => 'PARIS',

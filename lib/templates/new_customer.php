@@ -7,6 +7,7 @@
     unset( $_POST['meta'] );
 
     $_POST['user_login'] = $_POST['user_email'];
+    $_POST['display_name'] = $_POST['first_name'] . ' ' . $_POST['last_name'];
     $wp_error = wp_insert_user( $_POST );
 
     if( !is_wp_error( $wp_error ) ){
@@ -65,7 +66,6 @@
     'role' => array(
       'label'   => 'Role',
       'type'    => 'text',
-      'default' => 'customer'
     ),
     'meta[dob]' => array(
       'label'   => 'Date Of Birth',
@@ -107,8 +107,12 @@
 
   $data = array();
 
+  $data['role'] = 'customer';
+
   if( isset( $_GET[ 'id' ] ) && $_GET[ 'id' ] ){
     $user = get_user_by( 'ID', $_GET[ 'id' ] );
+
+    //$this->test( $user );
 
     $data['ID'] = $_GET[ 'id' ];
 

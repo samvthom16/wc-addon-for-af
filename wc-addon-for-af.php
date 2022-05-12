@@ -29,7 +29,7 @@ foreach( $inc_files as $inc_file ){
 
 
 
-
+/*
 add_action( 'woocommerce_order_item_add_action_buttons', 'wc_order_item_add_action_buttons_callback', 10, 1 );
 function wc_order_item_add_action_buttons_callback( $order ) {
     $label = esc_html__( 'Add Payment(s)', 'woocommerce' );
@@ -38,16 +38,8 @@ function wc_order_item_add_action_buttons_callback( $order ) {
     <button type="button" class="button <?php echo $slug; ?>-items"><?php echo $label; ?></button>
     <?php
 }
-
+*/
 
 function get_country_name( $country_code ){
   return WC()->countries->countries[ $country_code ];
 }
-
-function custom_change_admin_label() {
-    global $menu, $submenu;
-
-    // Change WooCommerce to Store
-    $menu['55.5'][0] = 'Autofrance';
-}
-add_action( 'admin_menu', 'custom_change_admin_label' );

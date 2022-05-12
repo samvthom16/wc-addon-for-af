@@ -28,11 +28,11 @@ class ORDER extends BASE{
       $data['vehicle'] = $item->get_name();
     }
 
-    $data['price'] = $order->get_subtotal();
+    //$data['price'] = ;
     $data['total_price'] = $order->get_total();
-    $data['advance_price'] = 0;
+    $data['advance_price'] = $order->get_total();
 
-    // CALCULATION OF FEES
+    /* CALCULATION OF FEES - NOT NEEDED
     foreach( $order->get_fees() as $fee ){
       if( strpos( strtolower( $fee->get_name() ), 'delivery' ) !== false ){
         $data['delivery_price'] = $fee->get_amount();
@@ -44,8 +44,19 @@ class ORDER extends BASE{
         $data['return_price'] = $fee->get_amount();
       }
     }
-
     $data['due_price'] = $data['total_price'] - $data['advance_price'];
+    */
+
+    $checkbox_fields = array( 'title', 'language' );
+    foreach( $checkbox_fields as $checkbox_field ){
+      if( isset( $data[ $checkbox_field ] ) ){
+        $new_slug = strtolower( $data[ $checkbox_field ] ) . '_check';
+        $data[ $new_slug ] = 'yes';
+        unset( $data[ $checkbox_field ] );
+      }
+    }
+
+
 
     $data['date'] = date( "Y/m/d" );
     $data['date'] = 'Paris';
