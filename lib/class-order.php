@@ -28,9 +28,12 @@ class ORDER extends BASE{
       $data['vehicle'] = $item->get_name();
     }
 
-    $data['price'] = wc_price( $data['price'], array( 'currency' => 'EUR' ) );
-    $data['total_price'] = wc_price( $order->get_total(), array( 'currency' => 'USD' ) );
-    $data['advance_price'] = wc_price( $order->get_total(), array( 'currency' => 'USD' ) );
+    //$data['price'] = wc_price( $data['price'], array( 'currency' => 'EUR' ) );
+    //$data['total_price'] = wc_price( $order->get_total(), array( 'currency' => 'USD' ) );
+    //$data['advance_price'] = wc_price( $order->get_total(), array( 'currency' => 'USD' ) );
+
+    $data['total_price'] = $order->get_total();
+    $data['advance_price'] = $order->get_total();
 
     /* CALCULATION OF FEES - NOT NEEDED
     foreach( $order->get_fees() as $fee ){
