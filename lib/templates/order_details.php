@@ -24,23 +24,29 @@
       'label' => 'Delivery Date:'
     ),
     'delivery_place' => array(
-      'type'  => 'text',
-      'label' => 'Delivery Place:'
+      'type'  => 'select',
+      'label' => 'Delivery Place:',
+      'options' => array(
+        ''  => 'Not Set',
+      )
     ),
     'date_end' => array(
       'type'  => 'date',
       'label' => 'Return Date:'
     ),
     'return_place' => array(
-      'type'  => 'text',
-      'label' => 'Return Place:'
+      'type'  => 'select',
+      'label' => 'Return Place:',
+      'options' => array(
+        ''  => 'Not Set',
+      )
     ),
     'flight_no' => array(
       'type'  => 'text',
       'label' => 'Flight Number:'
     ),
     'time_flight' => array(
-      'type'  => 'text',
+      'type'  => 'time',
       'label' => 'Flight Time:'
     ),
     'time_flight_slot' => array(
@@ -93,7 +99,7 @@
       );
 
       if( $field['type'] == 'select' ){
-        $wc_field['options'] = $field['options'];
+        $wc_field['options'] = apply_filters( $slug . '_af_options', $field['options'] );
         woocommerce_wp_select( $wc_field );
       }
       else{

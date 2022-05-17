@@ -19,3 +19,7 @@
   top: 5px;
   right: 5px;
 }
+
+.order_data_column:last-child{
+  display: none;
+}
