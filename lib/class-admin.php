@@ -16,7 +16,6 @@ class ADMIN extends BASE{
 
     add_action( 'woocommerce_process_shop_order_meta', function( $order_id ){
 
-
       //echo "test";
       //wp_die();
 
@@ -31,6 +30,14 @@ class ADMIN extends BASE{
         $payments = $_POST['af_payments'];
       }
       update_post_meta( $order_id, 'af_payments', $payments );
+
+      $checklist = array();
+      if( isset( $_POST['af_checklist'] ) ){
+        //$this->test( $_POST['af_checklist'] );
+        $checklist = $_POST['af_checklist'];
+      }
+      update_post_meta( $order_id, 'af_checklist', $checklist );
+      //wp_die();
 
 
     } );
@@ -79,14 +86,28 @@ class ADMIN extends BASE{
     } );
 
     add_action( 'add_meta_boxes', function(){
-       add_meta_box( 'wc_payments', 'Payments', array( $this, 'payments_metabox' ), 'shop_order' );
+       add_meta_box( 'wc_payments', 'Payments', array( $this, 'metabox' ), 'shop_order' );
+       add_meta_box( 'wc_checklist', 'Checklist', array( $this, 'metabox' ), 'shop_order' );
     } );
 
 
   }
 
-  function payments_metabox(){
-    include( 'templates/payments.php' );
+  function metabox( $post, $box ){
+
+    if( isset( $box['id'] ) ){
+      switch( $box['id'] ){
+
+        case 'wc_payments':
+          include( 'templates/payments.php' );
+          break;
+
+        case 'wc_checklist':
+        include( 'templates/checklist.php' );
+        break;
+      }
+    }
+
   }
 
   function add_menu(){
