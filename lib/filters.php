@@ -79,7 +79,7 @@ add_filter( 'af_pdf_fields_invoice', function( $fields ){
   $field_slugs = array(
     'date', 'order_id', 'peugeot_no',
 
-    'name', 'primary_address', 'secondary_address', 'country',
+    'name', 'email', 'primary_address', 'secondary_address', 'country',
 
     'vehicle', 'product_description', 'duration',
 
