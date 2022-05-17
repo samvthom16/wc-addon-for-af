@@ -12,6 +12,7 @@
 defined( 'ABSPATH' ) || exit;
 
 define( 'AF_CONTRACT_TEMPLATE', plugin_dir_path( __FILE__ ) . 'pdf/template-fixed.pdf' );
+define( 'AF_INVOICE_TEMPLATE', plugin_dir_path( __FILE__ ) . 'pdf/invoice-fixed.pdf' );
 
 $inc_files = array(
   'lib/filters.php',
@@ -25,6 +26,7 @@ $inc_files = array(
 foreach( $inc_files as $inc_file ){
   require_once( $inc_file );
 }
+
 
 
 
@@ -43,3 +45,40 @@ function wc_order_item_add_action_buttons_callback( $order ) {
 function get_country_name( $country_code ){
   return WC()->countries->countries[ $country_code ];
 }
+
+
+add_action( 'woocommerce_new_order', 'create_fees_for_wc_order',  1, 1  );
+function create_fees_for_wc_order( $order_id ) {
+  $order = new WC_Order( $order_id );
+  \WC_ADDON_FOR_AF\ORDER::getInstance()->setFeesByDefault( $order );
+}
+
+
+//print_r(  );
+
+/*
+add_action( 'admin_init', function(){
+
+  if( is_admin( 'post.php' ) && isset( $_GET['post'] ) && $_GET['post'] ){
+
+    try{
+      $order_id = $_GET['post'];
+      $order = new WC_ORDER( $order_id );
+
+      \WC_ADDON_FOR_AF\ORDER::getInstance()->setFeesByDefault( $order );
+    }
+    catch( Exception $e ){
+
+    }
+  }
+} );
+
+
+/*
+add_filter( 'woocommerce_order_get_items', function( $items, $obj, $types ){
+  echo '<pre>';
+  print_r( $items );
+  echo '</pre>';
+  return $items;
+}, 10, 3 );
+*/

@@ -7,6 +7,10 @@ class TEST extends BASE{
 
   function __construct(){
     add_action( 'wp_ajax_af_test', array( $this, 'ajaxCallback' ) );
+
+    add_action( 'af_test_invoice', array( $this, 'downloadInvoice' ) );
+    add_action( 'af_test_order_invoice', array( $this, 'downloadOrderInvoice' ) );
+
     add_action( 'af_test_contract', array( $this, 'downloadContract' ) );
     add_action( 'af_test_order_contract', array( $this, 'downloadOrderContract' ) );
   }
@@ -16,6 +20,55 @@ class TEST extends BASE{
       do_action( 'af_test_' . $_GET[ 'test' ] );
     }
     wp_die();
+  }
+
+  function downloadInvoice(){
+
+    $values = array(
+      'date'   => '11-02-2022',
+      'order_id'  => 'INV: XXX',
+      'peugeot_no'  => 'XXX',
+
+      'name'    => 'HENRY RICHARD',
+      'primary_address' => '6710 BRADLEY BLVD',
+      'secondary_address' => 'BETHESDA MD',
+      'country'         => 'UNITED STATES',
+
+      'vehicle' => 'PRODUCT NAME',
+      'product_description' => 'List some features here',
+      'duration'     => '30',
+
+      'delivery_place' => 'Paris',
+      'date_start'     => '21 Jun 2022',
+      'return_place' => 'Tokyo',
+      'date_end'     => '21 Dec 2022',
+
+      'price'         => '2300',
+      'accesories_price'     => '80',
+      'discount'      => '120',
+      'delivery_fee'  => '100',
+      'drop_off_fee'  => '200',
+      'total_price'   => '2500',
+
+      'payment_rcvd_amount_1'        => '500',
+      'payment_rcvd_date_1'   => '21-JUL-2022',
+      'payment_rcvd_amount_2'      => '1500',
+      'payment_rcvd_date_2' => '21-AUG-2022',
+      'balance_due'         => '1200',
+
+      'insurance_expiry'  => '01 APRIL 2022'
+    );
+
+    $this->test( $values );
+
+    $pdf = PDF::getInstance();
+    echo $pdf->download( 'invoice', $values );
+  }
+
+  function downloadOrderInvoice(){
+    if( isset( $_GET[ 'order_id' ] ) ){
+      echo ORDER::getInstance()->generateInvoice( $_GET[ 'order_id' ] );
+    }
   }
 
   function downloadContract(){

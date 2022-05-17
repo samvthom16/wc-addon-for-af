@@ -37,14 +37,19 @@ class PDF extends BASE{
     $filepath = apply_filters( 'af_pdf_filepath_' . $type, '' );
 
     $fields = apply_filters( 'af_pdf_fields_' . $type, array() );
-    $value_fields = $this->getValueFields( $fields, $values );
+    if( count( $fields ) ){
+      $value_fields = $this->getValueFields( $fields, $values );
+    }
+    else{
+      $value_fields = $values;
+    }
+
+
+    //$this->test( $fields );
+    //$this->test( $value_fields );
 
     $newfile = $this->getFilePath( $newfileslug );
-
-    //echo "<pre>";
-    //print_r( $value_fields );
-    //echo "</pre>";
-
+    
     $pdf = new FPDM( $filepath );
     $pdf->useCheckboxParser = true;
     $pdf->Load( $value_fields, false );     // second parameter: false if field values are in ISO-8859-1, true if UTF-8

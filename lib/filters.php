@@ -74,8 +74,39 @@ add_filter( 'af_pdf_fields_contract', function( $fields ){
   return $fields;
 } );
 
+add_filter( 'af_pdf_fields_invoice', function( $fields ){
+
+  $field_slugs = array(
+    'date', 'order_id', 'peugeot_no',
+
+    'name', 'primary_address', 'secondary_address', 'country',
+
+    'vehicle', 'product_description', 'duration',
+
+    'delivery_place', 'date_start', 'return_place', 'date_end',
+
+    'price', 'accessories_price', 'discount', 'delivery_fee', 'drop_off_fee', 'total_price',
+
+    'payment_rcvd_amount_1', 'payment_rcvd_date_1', 'payment_rcvd_amount_2', 'payment_rcvd_date_2',
+
+    'balance_due', 'insurance_expiry'
+  );
+
+  foreach( $field_slugs as $field_slug ){
+    $fields[ $field_slug ] = array();
+  }
+
+  return $fields;
+} );
+
+
+
 add_filter( 'af_pdf_filepath_contract', function( $filepath ){
   return AF_CONTRACT_TEMPLATE;
+} );
+
+add_filter( 'af_pdf_filepath_invoice', function( $filepath ){
+  return AF_INVOICE_TEMPLATE;
 } );
 
 add_action( 'admin_menu', function(){
