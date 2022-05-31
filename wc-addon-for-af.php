@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'AF_CONTRACT_TEMPLATE', plugin_dir_path( __FILE__ ) . 'pdf/template-fixed.pdf' );
+define( 'AF_CONTRACT_TEMPLATE', plugin_dir_path( __FILE__ ) . 'pdf/contract-fixed.pdf' );
 define( 'AF_INVOICE_TEMPLATE', plugin_dir_path( __FILE__ ) . 'pdf/invoice-fixed.pdf' );
 
 $inc_files = array(
