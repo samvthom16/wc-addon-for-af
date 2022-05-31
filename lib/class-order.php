@@ -70,6 +70,7 @@ class ORDER extends BASE{
       'secondary_address' => $order->get_billing_address_2(),
       'code_postal'       => $order->get_billing_postcode(),
       'city'              => $order->get_billing_city(),
+      'state'             => get_state_name( $order->get_billing_country(), $order->get_billing_state() ),
       'country'           => get_country_name( $order->get_billing_country() )
     );
   }
@@ -92,6 +93,10 @@ class ORDER extends BASE{
     $data = array();
     foreach ( $order->get_items() as $item_id => $item ) {
       $data['vehicle'] = $item->get_name();
+      $product_instance = wc_get_product( $item->get_product_id() );
+
+      //$this->test( $product_instance->get_short_description() );
+      $data['product_description'] = $product_instance->get_short_description();
     }
     return $data;
   }
@@ -167,7 +172,7 @@ class ORDER extends BASE{
     $vehicle = $this->getVehicleData( $order );
     $payments = $this->getPaymentsData( $order );
 
-    //$this->test( $customer );
+    //$this->test( $address );
 
     $data = array_merge( $customer, $fees, $address, $vehicle, $meta_order, $payments );
 
@@ -191,7 +196,7 @@ class ORDER extends BASE{
       $data['name'] .= $data[ 'last_name' ];
     }
 
-
+    $data['city_state'] = $data['city'] . ', ' . $data['state'];
 
     return $data;
   }

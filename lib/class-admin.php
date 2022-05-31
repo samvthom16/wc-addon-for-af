@@ -58,10 +58,12 @@ class ADMIN extends BASE{
         '_af_invoice'  => 'View Invoice'
       );
 
+      $version = time();
+
       foreach( $docs as $slug => $label ){
         $doc_link = get_post_meta( $post_id, $slug, true );
         if( $doc_link ){
-          echo "<li class='wide' style='border:none;'><a href='$doc_link' target='_blank'>$label</a></li>";
+          echo "<li class='wide' style='border:none;'><a href='$doc_link?version=$version' target='_blank'>$label</a></li>";
         }
       }
     } );

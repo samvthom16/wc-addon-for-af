@@ -77,9 +77,9 @@ add_filter( 'af_pdf_fields_contract', function( $fields ){
 add_filter( 'af_pdf_fields_invoice', function( $fields ){
 
   $field_slugs = array(
-    'date', 'order_id', 'peugeot_no',
+    'date', 'order_id', 'ref_rep', 'ref_car',
 
-    'name', 'email', 'primary_address', 'secondary_address', 'country',
+    'name', 'email', 'primary_address', 'secondary_address', 'city_state', 'country',
 
     'vehicle', 'product_description', 'duration',
 
@@ -95,6 +95,8 @@ add_filter( 'af_pdf_fields_invoice', function( $fields ){
   foreach( $field_slugs as $field_slug ){
     $fields[ $field_slug ] = array();
   }
+
+  $fields['date_end'] = array( 1 );
 
   return $fields;
 } );

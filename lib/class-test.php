@@ -27,11 +27,13 @@ class TEST extends BASE{
     $values = array(
       'date'   => '11-02-2022',
       'order_id'  => 'INV: XXX',
-      'peugeot_no'  => 'XXX',
+      'ref_rep'  => 'REP: XXX',
+      'ref_car'  => 'CAR: XXX',
 
       'name'    => 'HENRY RICHARD',
       'primary_address' => '6710 BRADLEY BLVD',
       'secondary_address' => 'BETHESDA MD',
+      'city_state'      => 'New York, Texas',
       'country'         => 'UNITED STATES',
 
       'vehicle' => 'PRODUCT NAME',
@@ -43,20 +45,20 @@ class TEST extends BASE{
       'return_place' => 'Tokyo',
       'date_end'     => '21 Dec 2022',
 
-      'price'         => '2300',
-      'accesories_price'     => '80',
+      'price'             => '2300',
+      'accessories_price'     => '80',
       'discount'      => '120',
       'delivery_fee'  => '100',
       'drop_off_fee'  => '200',
       'total_price'   => '2500',
 
-      'payment_rcvd_amount_1'        => '500',
-      'payment_rcvd_date_1'   => '21-JUL-2022',
+      'payment_rcvd_amount_1'      => '500',
+      'payment_rcvd_date_1'        => '21-JUL-2022',
       'payment_rcvd_amount_2'      => '1500',
-      'payment_rcvd_date_2' => '21-AUG-2022',
-      'balance_due'         => '1200',
+      'payment_rcvd_date_2'        => '21-AUG-2022',
+      'balance_due'                => '1200',
 
-      'insurance_expiry'  => '01 APRIL 2022'
+
     );
 
     $this->test( $values );

@@ -46,6 +46,10 @@ function get_country_name( $country_code ){
   return WC()->countries->countries[ $country_code ];
 }
 
+function get_state_name( $country, $state_code ){
+  return WC()->countries->get_states( $country )[ $state_code ];
+}
+
 
 add_action( 'woocommerce_new_order', 'create_fees_for_wc_order',  1, 1  );
 function create_fees_for_wc_order( $order_id ) {
