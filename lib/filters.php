@@ -1,7 +1,13 @@
 <?php
 
+/*
+* SET QUANTITY OF THE CART TO 1
+*/
 add_filter( 'woocommerce_is_sold_individually', function(){ return true; } );
 
+/*
+* PDF FIELDS FOR THE CONTRACT
+*/
 add_filter( 'af_pdf_fields_contract', function( $fields ){
 
   $fields = array(
@@ -18,6 +24,7 @@ add_filter( 'af_pdf_fields_contract', function( $fields ){
     'nationality'   => array( 1, 3, 4 ),
     'telephone'     => array( 1, 3, 4 ),
     'passport_check'=> array( 1, 3, 4 ),
+    'mobile_check'  => array( 1, 3, 4 ),
     'passport_no'   => array( 1, 3, 4 ),
     'date_issue'    => array( 1, 3, 4 ),
 
@@ -67,23 +74,28 @@ add_filter( 'af_pdf_fields_contract', function( $fields ){
     'total_price'       => array( 3, 4 ),
     'due_price'         => array( 3, 4 ),
 
-    'date'    => array( 3, 4 ),
-    'place'   => array( 3, 4 ),
+    //'date'    => array( 3, 4 ),
+    //'place'   => array( 3, 4 ),
   );
 
   return $fields;
 } );
 
+/*
+* PDF FIELDS FOR THE INVOICE
+*/
 add_filter( 'af_pdf_fields_invoice', function( $fields ){
 
   $field_slugs = array(
     'date', 'order_id', 'ref_rep', 'ref_car',
 
-    'name', 'email', 'primary_address', 'secondary_address', 'city_state', 'country',
+    'name', 'primary_address', 'secondary_address', 'city_state', 'country',
 
-    'vehicle', 'product_description', 'duration',
+    'vehicle', 'product_description', 'duration', 'accessories',
 
-    'delivery_place', 'date_start', 'return_place', 'date_end',
+    'delivery_place', 'date_start', 'delivery_remark',
+
+    'return_place', 'date_end', 'return_remark',
 
     'price', 'accessories_price', 'discount', 'delivery_fee', 'drop_off_fee', 'total_price',
 
@@ -102,72 +114,78 @@ add_filter( 'af_pdf_fields_invoice', function( $fields ){
 } );
 
 
-
+/*
+* PDF FILEPATH FOR THE CONTRACT
+*/
 add_filter( 'af_pdf_filepath_contract', function( $filepath ){
   return AF_CONTRACT_TEMPLATE;
 } );
 
+/*
+* PDF FILEPATH FOR THE INVOICE
+*/
 add_filter( 'af_pdf_filepath_invoice', function( $filepath ){
   return AF_INVOICE_TEMPLATE;
 } );
 
-add_action( 'admin_menu', function(){
-  global $menu, $submenu;
 
-  /*
-  echo '<pre>';
-  print_r( $menu );
-  echo '</pre>';
-  wp_die();
-  */
 
-  // Change WooCommerce to Store
-  $menu['55.5'][0] = 'Auto France';
-  $menu['55.5'][6] = 'dashicons-database-view';
-} );
-
-function af_get_cities(){
-  return array(
-    'Amsterdam APT (AP)',
-    'Bale-Mulhouse APT (AP)',
-    'Barcelone APT (AP)',
-    'Bordeaux APT (AP)',
-    'Brest APT (AP)',
-    'Bruxelles APT (AP)',
-    'Calais Gare Maritime (AP)',
-    'Francfort APT (AP)',
-    'Geneve APT (AP)',
-    'Lisbonne APT (AP)',
-    'Lyon APT (AP)',
-    'Madrid APT (AP)',
-    'Marseille APT (AP)',
-    'Milan Linate APT (AP)',
-    'Milan Malpensa APT (AP)',
-    'Montpellier APT (AP)',
-    'Munich APT (AP)',
-    'Nantes APT (AP)',
-    'Nice APT (AP)',
-    'Paris Orly APT (AP)',
-    'Paris Porte De Saint Cloud (AP)',
-    'Paris Roissy APT (AP)',
-    'PAU APT (AP)',
-    'PORTO APT (AP)',
-    'ROME APT (AP)',
-    'TOULOUSE APT (AP)',
-    'VIGO APT (AP)'
-  );
-}
-
-function af_filter_dropdown_delivery_and_return_place( $options ){
-  $cities = af_get_cities();
-
-  foreach( $cities as $city ){
-    $city = strtoupper( $city );
-    $options[ $city ] = $city;
-  }
-
-  return $options;
-}
-
+/*
+* DROPDOWN OPTIONS FOR RELIVERY AND RETURN PLACES
+*/
 add_filter( 'delivery_place_af_options', 'af_filter_dropdown_delivery_and_return_place' );
 add_filter( 'return_place_af_options', 'af_filter_dropdown_delivery_and_return_place' );
+
+/*
+* DISPLAY SETTING VALUE
+*/
+add_filter( 'delivery_place_af_setting_value', 'af_filter_setting_value_delivery_and_return_place' );
+add_filter( 'return_place_af_setting_value', 'af_filter_setting_value_delivery_and_return_place' );
+add_filter( 'accessories_af_setting_value', 'af_filter_setting_value_accessories' );
+add_filter( 'price_af_setting_value', 'number_format' );
+
+add_filter( 'af_data_invoice', function( $data ){
+
+  $data['price'] = $data['subtotal_price'];
+  $data['delivery_remark'] = $data['delivery_place_remark'];
+  $data['return_remark'] = $data['return_place_remark'];
+
+  //echo "<pre>";
+  //print_r( $data );
+  //echo "</pre>";
+
+
+
+  $data['city_state'] = $data['city'] . ', ' . $data['state'];
+  return $data;
+} );
+
+add_filter( 'af_data_contract', function( $data ){
+
+  $data['price'] = number_format( $data['price'] );
+
+  $checkbox_fields = array( 'title', 'language', 'purpose' );
+  foreach( $checkbox_fields as $checkbox_field ){
+    if( isset( $data[ $checkbox_field ] ) ){
+      $new_slug = strtolower( $data[ $checkbox_field ] ) . '_check';
+      $data[ $new_slug ] = 'yes';
+      unset( $data[ $checkbox_field ] );
+    }
+  }
+
+  if( isset( $data['product_description'] ) ){
+    $data['observations'] = $data['product_description'];
+  }
+
+  if( isset( $data['time_flight_slot'] ) ){
+    $temp_key = strtolower( $data['time_flight_slot'] ) . '_check';
+    $data[ $temp_key ] = 'yes';
+    unset( $data['time_flight_slot'] );
+  }
+
+  $data['passport_check'] = 'yes';
+  $data['mobile_check'] = 'yes';
+  //$data['home_check'] = 'no';
+
+  return $data;
+} );

@@ -1,11 +1,7 @@
 <!-- https://rudrastyh.com/woocommerce/customize-order-details.html -->
-
-
-
 <br class="clear" />
 <br>
 <h3>Details<a href="#" class="edit_address">Edit</a></h3>
-
 <?php
 
   $meta = get_post_meta( $order->get_id(), 'af_meta', true );
@@ -69,9 +65,27 @@
         'Journalist'      => 'Journalist'
       )
     ),
+    'europe_address' => array(
+      'type'  => 'text',
+      'label' => 'Europe Address'
+    ),
     'price' => array(
       'type'  => 'text',
       'label' => 'Total price of the car (Euros):'
+    ),
+    'accessories' => array(
+      'type'  => 'checkboxes',
+      'label' => 'Accessories:',
+      'options' => array(
+        'Snow Chains',
+        'Anti-Slip Tire Socks',
+        'Roof Bars',
+        'Child Seat Rear Facing Upto 28lbs',
+        'Child Seat 20-40 lbs',
+        'Child Seat 33-80 lbs',
+        'Public Charging Cable',
+        'Fuel Fill Up'
+      )
     ),
   );
 
@@ -81,7 +95,10 @@
   <?php foreach( $fields as $slug => $field ):?>
 	<p>
     <strong><?php echo $field['label'];?></strong>
-    <?php echo isset( $meta[ $slug ] ) ? $meta[ $slug ] : 'Not Set';?>
+    <?php
+      $setting_value = isset( $meta[ $slug ] ) ? $meta[ $slug ] : 'Not Set';
+      echo apply_filters( $slug . '_af_setting_value', $setting_value );
+    ?>
   </p>
   <?php endforeach;?>
 </div>
@@ -101,6 +118,13 @@
       if( $field['type'] == 'select' ){
         $wc_field['options'] = apply_filters( $slug . '_af_options', $field['options'] );
         woocommerce_wp_select( $wc_field );
+      }
+      elseif ( $field['type'] == 'checkboxes' ) {
+        echo "<p class='form-field'>" . $field['label'] . "</p>";
+        $wc_field['name'] = $wc_field['name'] . '[]';
+        $wc_field['selected'] = $wc_field['value'];
+        $wc_field['options'] = apply_filters( $slug . '_af_options', $field['options'] );
+        af_checkboxes( $wc_field );
       }
       else{
         $wc_field['type'] = $field['type'];

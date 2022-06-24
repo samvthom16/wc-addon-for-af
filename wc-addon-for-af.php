@@ -16,9 +16,11 @@ define( 'AF_INVOICE_TEMPLATE', plugin_dir_path( __FILE__ ) . 'pdf/invoice-fixed.
 
 $inc_files = array(
   'lib/filters.php',
+  'lib/functions.php',
   'lib/class-base.php',
   'lib/class-pdf.php',
   'lib/class-admin.php',
+  'lib/class-order-admin.php',
   'lib/class-order.php',
   'lib/class-test.php',
 );

@@ -70,9 +70,55 @@ jQuery.fn.wc_af_payments = function(){
 
 };
 
+var AF_CUSTOMER = {
+
+	setState: function( state_code ){
+		jQuery( '#billing_state' ).val( state_code );
+	},
+
+	populateStates: function(){
+
+		//console.log( 'populate' );
+
+		var country_states = window.billing_meta_data.country_states;
+
+		var country_code = AF_CUSTOMER.getSelectedCountry();
+
+		var states = country_states[country_code];
+
+		jQuery( '#billing_state' ).empty();
+
+		for( var key in states ){
+			var $option = jQuery( document.createElement( 'option' ) );
+			$option.val( key );
+			$option.html( states[ key ] );
+			$option.appendTo( '#billing_state' );
+		}
+
+		//console.log( states );
+	},
+
+	getSelectedCountry: function(){
+		return jQuery( '#billing_country' ).val();
+	},
+
+	init: function(){
+		AF_CUSTOMER.populateStates();
+		jQuery( '#billing_country' ).change( AF_CUSTOMER.populateStates );
+		if( window.selectedState ){
+			AF_CUSTOMER.setState( window.selectedState );
+		}
+	}
+};
+
+
+
 jQuery( document ).ready( function(){
 
   jQuery( '[data-behaviour~=wc-af-payments]' ).wc_af_payments();
+
+	AF_CUSTOMER.init();
+
 
 
 

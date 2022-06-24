@@ -23,3 +23,25 @@
 .order_data_column:last-child{
   display: none;
 }
+
+.af-checkbox{
+  padding-left: 25px;
+  position: relative;
+}
+
+.af-checkbox input[type=checkbox]{
+  position: absolute;
+  top: 3px;
+  left: 0;
+  display: block !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.af-checkbox input[type=checkbox]:checked::before{
+  width: 25px !important;
+}
+
+#order_data .order_data_column p.af-checkbox{
+  padding-left: 25px !important; 
+}

@@ -10,9 +10,7 @@ class ADMIN extends BASE{
 
     add_action( 'admin_enqueue_scripts', array( $this, 'loadAssets' ) );
 
-    add_action( 'woocommerce_admin_order_data_after_order_details', function( $order ){
-      include "templates/order_details.php";
-    } );
+
 
     add_action( 'woocommerce_process_shop_order_meta', function( $order_id ){
 
@@ -45,28 +43,13 @@ class ADMIN extends BASE{
 
 
 
-    add_action( 'woocommerce_order_actions', array( $this, 'add_order_actions' ) );
+    //add_action( 'woocommerce_order_actions', array( $this, 'add_order_actions' ) );
 
-    add_action( 'woocommerce_order_action_af_generate_contract', array( $this, 'generateContract' ) );
+    //add_action( 'woocommerce_order_action_af_generate_contract', array( $this, 'generateContract' ) );
 
-    add_action( 'woocommerce_order_action_af_generate_invoice', array( $this, 'generateInvoice' ) );
+    //add_action( 'woocommerce_order_action_af_generate_invoice', array( $this, 'generateInvoice' ) );
 
-    add_action( 'woocommerce_order_actions_start', function( $post_id ){
 
-      $docs = array(
-        '_af_contract' => 'View Contract',
-        '_af_invoice'  => 'View Invoice'
-      );
-
-      $version = time();
-
-      foreach( $docs as $slug => $label ){
-        $doc_link = get_post_meta( $post_id, $slug, true );
-        if( $doc_link ){
-          echo "<li class='wide' style='border:none;'><a href='$doc_link?version=$version' target='_blank'>$label</a></li>";
-        }
-      }
-    } );
 
     add_action( 'admin_init', function(){
 
@@ -122,10 +105,34 @@ class ADMIN extends BASE{
       'new-wc-customer',
       array( $this, 'submenu_page' )
     );
+
+    add_submenu_page(
+      'woocommerce',
+      'Locations',
+      'Locations',
+      'manage_woocommerce',
+      'order-locations',
+      array( $this, 'submenu_page' )
+    );
+
    }
 
+
+
   function submenu_page(){
-    include( 'templates/new_customer.php' );
+
+    if( isset( $_GET['page'] ) && $_GET['page'] == 'new-wc-customer' ){
+      include( 'templates/new_customer.php' );
+    }
+
+    if( isset( $_GET['page'] ) && $_GET['page'] == 'order-locations' ){
+
+      $url = admin_url( 'edit-tags.php?taxonomy=location&post_type=shop_order' );
+
+      /* REDIRECT VIA JS */
+			_e("<script>location.href='" . $url . "';</script>");
+    }
+
   }
 
   function add_order_actions( $actions ){
@@ -163,7 +170,27 @@ class ADMIN extends BASE{
     wp_enqueue_script( 'wcaf-repeater', plugins_url( 'assets/js/repeater.js' , dirname(__FILE__) ), array( 'jquery' ), time() );
     wp_enqueue_script( 'wcaf-admin', plugins_url( 'assets/js/admin.js' , dirname(__FILE__) ), array( 'jquery', 'wcaf-repeater' ), time() );
 
+    wp_localize_script( 'wcaf-admin', 'billing_meta_data', array(
+      'country_states' => array_merge( WC()->countries->get_allowed_country_states(), WC()->countries->get_shipping_country_states() )
+    ) );
+
     wp_enqueue_style( 'wcaf-admin', plugins_url( 'assets/css/admin.css' , dirname(__FILE__) ), array(), time() );
+  }
+
+  function displayCheckboxes( $field ){
+    $field['selected'] = isset( $field['selected'] ) && $field['selected'] ? $field['selected'] : array();
+
+    if( is_array( $field['options'] ) ){
+      foreach( $field['options'] as $option ){
+        woocommerce_wp_checkbox( array(
+          'label'         => $option,
+          'wrapper_class' => 'af-checkbox',
+          'name'          => $field['name'],
+          'cbvalue'       => $option,
+          'value'         => in_array( $option, $field['selected'] ) ? $option : ''
+        ) );
+      }
+    }
   }
 
 

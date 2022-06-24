@@ -7,7 +7,13 @@
 
   //$this->test( $checklist_values );
 
-  $options = array(
+  $field = array(
+    'name'     => 'af_checklist[]',
+    'selected' => $checklist_values,
+    'options'  => array()
+  );
+
+  $field['options'] = array(
     'PASSPORT',
     'DRIVER’S LICENSE',
     'ETA',
@@ -18,15 +24,4 @@
 
   //$this->test( $options );
 
-  foreach( $options as $option ){
-    ?>
-    <p>
-      <label>
-        <input type='checkbox' name='af_checklist[]' <?php if( in_array( $option, $checklist_values ) ) _e( "checked='checked'" );?> value='<?php echo $option;?>' />
-        <?php echo $option;?>
-      </label>
-    </p>
-    <?php
-  }
-
-?>
+  af_checkboxes( $field );

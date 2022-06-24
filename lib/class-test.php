@@ -42,8 +42,11 @@ class TEST extends BASE{
 
       'delivery_place' => 'Paris',
       'date_start'     => '21 Jun 2022',
+      'delivery_remark' => 'Some delivery remark here',
+
       'return_place' => 'Tokyo',
       'date_end'     => '21 Dec 2022',
+      'drop_off_remark' => 'Some return remark here',
 
       'price'             => '2300',
       'accessories_price'     => '80',
@@ -61,7 +64,7 @@ class TEST extends BASE{
 
     );
 
-    $this->test( $values );
+    //$this->test( $values );
 
     $pdf = PDF::getInstance();
     echo $pdf->download( 'invoice', $values );
@@ -69,7 +72,7 @@ class TEST extends BASE{
 
   function downloadOrderInvoice(){
     if( isset( $_GET[ 'order_id' ] ) ){
-      echo ORDER::getInstance()->generateInvoice( $_GET[ 'order_id' ] );
+      echo ORDER::getInstance()->generateDocument( $_GET[ 'order_id' ], 'invoice' );
     }
   }
 
@@ -147,7 +150,8 @@ class TEST extends BASE{
 
   function downloadOrderContract(){
     if( isset( $_GET[ 'order_id' ] ) ){
-      echo ORDER::getInstance()->generateContract( $_GET[ 'order_id' ] );
+      echo ORDER::getInstance()->generateDocument( $_GET[ 'order_id' ], 'contract' );
+      //echo ORDER::getInstance()->generateContract( $_GET[ 'order_id' ] );
     }
   }
 

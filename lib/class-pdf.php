@@ -33,7 +33,7 @@ class PDF extends BASE{
 	}
 
 
-  function download( $type, $values, $newfileslug = 'sample' ){
+  function download( $type, $values, $download = false, $newfileslug = 'sample' ){
     $filepath = apply_filters( 'af_pdf_filepath_' . $type, '' );
 
     $fields = apply_filters( 'af_pdf_fields_' . $type, array() );
@@ -49,11 +49,14 @@ class PDF extends BASE{
     //$this->test( $value_fields );
 
     $newfile = $this->getFilePath( $newfileslug );
-    
+
     $pdf = new FPDM( $filepath );
     $pdf->useCheckboxParser = true;
     $pdf->Load( $value_fields, false );     // second parameter: false if field values are in ISO-8859-1, true if UTF-8
     $pdf->Merge();
+
+    return $pdf->output();
+
     $pdf->Output( 'F', $newfile['path'] );
 
     return $newfile['url'];

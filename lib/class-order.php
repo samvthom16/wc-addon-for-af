@@ -6,8 +6,9 @@ use WC_Order_Item_Fee;
 
 class ORDER extends BASE{
 
-  // SET DELIVERY, DROP OFF & ACCESSORIES FEES
-
+  /*
+  * SET DELIVERY, DROP OFF & ACCESSORIES FEES
+  */
   function setFeesByDefault( $order ){
 
     if( count( $order->get_fees() ) < 1 ){
@@ -35,35 +36,6 @@ class ORDER extends BASE{
 
   }
 
-  function getDataForContract( $order_id ){
-    $order = wc_get_order( $order_id );
-
-    $meta_order = $this->getOrderMeta( $order );
-    $address = $this->getAddressData( $order );
-    $customer = $this->getCustomerData( $order );
-    $vehicle = $this->getVehicleData( $order );
-
-    $data = array_merge( $meta_order, $customer, $address, $vehicle );
-
-    $data['order_id'] = $order_id;
-
-    $data['total_price'] = number_format( $order->get_total() );
-    $data['advance_price'] = number_format( $order->get_total() );
-    $data['price'] = number_format( $data['price'] );
-
-    $checkbox_fields = array( 'title', 'language', 'purpose' );
-    foreach( $checkbox_fields as $checkbox_field ){
-      if( isset( $data[ $checkbox_field ] ) ){
-        $new_slug = strtolower( $data[ $checkbox_field ] ) . '_check';
-        $data[ $new_slug ] = 'yes';
-        unset( $data[ $checkbox_field ] );
-      }
-    }
-
-    $data['place'] = 'Paris';
-    return $data;
-  }
-
   function getAddressData( $order ){
     return array(
       'primary_address'   => $order->get_billing_address_1(),
@@ -77,15 +49,23 @@ class ORDER extends BASE{
 
   function getCustomerData( $order ){
     $customer = $order->get_user();
-
     $data = array(
       'first_name' => $customer->user_firstname,
       'last_name'  => $customer->user_lastname,
       'email'      => $customer->user_email
     );
 
-    $meta_user = get_user_meta( $customer->ID, 'af_meta', true );
+    // MERGE LAST NAME & FIRST NAME
+    $data['name'] = '';
+    if( isset( $data[ 'first_name' ] ) ){
+      $data['name'] .= $data[ 'first_name' ] . ' ';
+    }
+    if( isset( $data[ 'last_name' ] ) ){
+      $data['name'] .= $data[ 'last_name' ];
+    }
 
+    // GET META USER DATA
+    $meta_user = get_user_meta( $customer->ID, 'af_meta', true );
     return array_merge( $data, $meta_user );
   }
 
@@ -94,8 +74,6 @@ class ORDER extends BASE{
     foreach ( $order->get_items() as $item_id => $item ) {
       $data['vehicle'] = $item->get_name();
       $product_instance = wc_get_product( $item->get_product_id() );
-
-      //$this->test( $product_instance->get_short_description() );
       $data['product_description'] = $product_instance->get_short_description();
     }
     return $data;
@@ -117,6 +95,9 @@ class ORDER extends BASE{
       }
     }
 
+    $data['total_price'] = number_format( $order->get_total() );
+    $data['subtotal_price'] = number_format( $order->get_subtotal() );
+
     return $data;
   }
 
@@ -133,6 +114,15 @@ class ORDER extends BASE{
         $i++;
       }
     }
+
+    // CALCULATING BALANCE DUE
+    $data['balance_due'] = $order->get_total();
+    if( isset( $data['total_paid'] ) ){
+      $data['balance_due'] -= $data['total_paid'];
+    }
+    if( $data['balance_due'] < 1 ) $data['balance_due'] = 0;
+    $data['balance_due'] = number_format( $data['balance_due'] );
+
     return $data;
   }
 
@@ -145,7 +135,7 @@ class ORDER extends BASE{
       $data['duration'] = round( $datediff / ( 60 * 60  * 24 ) );
     }
 
-    // ADD CURRENT DATE FOR INVOICE & CONTRACT
+    // ADD CURRENT DATE FOR INVOICE
     $data['date'] = date( "d M Y" );
 
     // FORMAT ALL DATE FIELDS
@@ -155,6 +145,23 @@ class ORDER extends BASE{
         $data[ $date_field ] = $this->formatDate( $data[ $date_field ] );
       }
     }
+
+    // GET TERM NAMES FOR LOCATIONS
+    $location_fields = array( 'delivery_place', 'return_place' );
+    foreach( $location_fields as $location_field ){
+      if( isset( $data[ $location_field ] ) ){
+        $term_id = $data[ $location_field ];
+        $term = get_term( $term_id );
+        $data[ $location_field ] = $term->name;
+        $data[ $location_field . '_remark' ] = $term->description;
+      }
+    }
+
+    if( isset( $data['accessories'] ) ){
+      $data['accessories'] = af_filter_setting_value_accessories( $data['accessories'] );
+    }
+
+
     return $data;
   }
 
@@ -162,63 +169,27 @@ class ORDER extends BASE{
     return date_format( date_create( $date_field ), "d M Y" );
   }
 
-  function getDataForInvoice( $order_id ){
-    $order = wc_get_order( $order_id );
+  
 
+  /*
+  * GENERATES PDF DOCUMENT FOR EACH ORDER
+  */
+  function generateDocument( $order_id, $slug ){
+
+    $order = wc_get_order( $order_id );
     $meta_order = $this->getOrderMeta( $order );
     $customer = $this->getCustomerData( $order );
     $fees = $this->getFees( $order );
     $address = $this->getAddressData( $order );
     $vehicle = $this->getVehicleData( $order );
     $payments = $this->getPaymentsData( $order );
-
-    //$this->test( $address );
-
     $data = array_merge( $customer, $fees, $address, $vehicle, $meta_order, $payments );
-
     $data['order_id'] = $order_id;
+    $data = apply_filters( 'af_data_' . $slug,  $data );
 
-    $data['price'] = number_format( $order->get_subtotal() );
-    $data['total_price'] = number_format( $order->get_total() );
-
-    $data['balance_due'] = $order->get_total();
-    if( isset( $data['total_paid'] ) ){
-      $data['balance_due'] -= $data['total_paid'];
-    }
-    if( $data['balance_due'] < 1 ) $data['balance_due'] = 0;
-    $data['balance_due'] = number_format( $data['balance_due'] );
-
-    $data['name'] = '';
-    if( isset( $data[ 'first_name' ] ) ){
-      $data['name'] .= $data[ 'first_name' ] . ' ';
-    }
-    if( isset( $data[ 'last_name' ] ) ){
-      $data['name'] .= $data[ 'last_name' ];
-    }
-
-    $data['city_state'] = $data['city'] . ', ' . $data['state'];
-
-    return $data;
-  }
-
-  function generateContract( $order_id ){
-    $data = $this->getDataForContract( $order_id );
-    $this->test( $data );
-
-    $newfileslug = 'af_contract_' . $data['order_id'];
     $pdf = PDF::getInstance();
-    return $pdf->download( 'contract', $data, $newfileslug );
+    return $pdf->download( $slug, $data, true );
+    //return $pdf->download( 'contract', $data, true, $newfileslug );
   }
-
-  function generateInvoice( $order_id ){
-    $data = $this->getDataForInvoice( $order_id );
-    $this->test( $data );
-
-    $newfileslug = 'af_invoice_' . $data['order_id'];
-    $pdf = PDF::getInstance();
-    return $pdf->download( 'invoice', $data, $newfileslug );
-  }
-
-
 
 }
