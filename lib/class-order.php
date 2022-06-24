@@ -8,34 +8,37 @@ class ORDER extends BASE{
 
   /*
   * SET DELIVERY, DROP OFF & ACCESSORIES FEES
+  * THIS VALUE IS SET BY DEFAULT EVEN IF IT WAS NOT ADDED
+  * BY THE USER
   */
   function setFeesByDefault( $order ){
 
+    // CHECKING IF ANY FEES WERE ENTERED
     if( count( $order->get_fees() ) < 1 ){
 
+      // STANDARD LIST OF FEES TO BE ADDED
       $fees = array(
         'Delivery Fee'  => '300',
         'Drop Off Fee'  => '200',
         'Accessories'   => '0'
       );
 
-      //print_r( $fees );
-
-      foreach ($fees as $fee_name => $fee_amount) {
+      // ITERATE THROUGH EACH FEE AND SET THE DEFAULT AMOUNT 
+      foreach ( $fees as $fee_name => $fee_amount ) {
         $item_fee = new WC_Order_Item_Fee();
         $item_fee->set_name( $fee_name );
         $item_fee->set_amount( $fee_amount );
         $item_fee->set_total( $fee_amount );
         $order->add_item( $item_fee );
       }
-
       $order->calculate_totals();
       $order->save();
-
     }
-
   }
 
+  /*
+  * GET ADDRESS INFORMATION FROM THE BILLING ADDRESS OF THE CUSTOMER
+  */
   function getAddressData( $order ){
     return array(
       'primary_address'   => $order->get_billing_address_1(),
@@ -47,6 +50,10 @@ class ORDER extends BASE{
     );
   }
 
+  /*
+  * GET CUSTOMER DATA
+  * INCLUDES META INFORMATION AS WELL
+  */
   function getCustomerData( $order ){
     $customer = $order->get_user();
     $data = array(
@@ -69,6 +76,9 @@ class ORDER extends BASE{
     return array_merge( $data, $meta_user );
   }
 
+  /*
+  * INFORMATION OF THE VEHICLE THAT WAS SELECTED
+  */
   function getVehicleData( $order ){
     $data = array();
     foreach ( $order->get_items() as $item_id => $item ) {
@@ -79,6 +89,10 @@ class ORDER extends BASE{
     return $data;
   }
 
+  /*
+  * ARRAY OF ALL THE FEES THAT HAS BEEN LEVIED ON THIS ORDER
+  * ALSO INCLUDES THE SUBTOTAL AND TOTAL PRICE
+  */
   function getFees( $order ){
     $data = array();
 
@@ -101,6 +115,11 @@ class ORDER extends BASE{
     return $data;
   }
 
+  /*
+  * ARRAY OF THE PAYMENTS RECEIVED
+  * WITH DATE AND AMOUNT
+  * BALANCE DUE IS ALSO CALCULATED
+  */
   function getPaymentsData( $order ){
     $data = array( 'total_paid' => 0 );
     $payments = get_post_meta( $order->get_id(), 'af_payments', true );
@@ -126,6 +145,10 @@ class ORDER extends BASE{
     return $data;
   }
 
+  /*
+  * ARRAY OF THE ORDER INFORMATION
+  * META ORDER DATA
+  */
   function getOrderMeta( $order ){
     $data = get_post_meta( $order->get_id(), 'af_meta', true );
 
@@ -157,19 +180,20 @@ class ORDER extends BASE{
       }
     }
 
+    // ACCESSORIES TO BE FORMATTED AS COMMA SEPERATED VALUES
     if( isset( $data['accessories'] ) ){
       $data['accessories'] = af_filter_setting_value_accessories( $data['accessories'] );
     }
 
-
     return $data;
   }
 
+  /*
+  * FORMAT DATE
+  */
   function formatDate( $date_field ){
     return date_format( date_create( $date_field ), "d M Y" );
   }
-
-  
 
   /*
   * GENERATES PDF DOCUMENT FOR EACH ORDER

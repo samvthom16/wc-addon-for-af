@@ -6,16 +6,17 @@ class ORDER_ADMIN extends BASE{
 
   function __construct(){
 
+    /*
+    * UPDATE WooCommerce MENU ITEM to AUTOFRANCE STORE
+    */
     add_action( 'admin_menu', function(){
       global $menu, $submenu;
-
-      // Change WooCommerce to Store
       $menu['55.5'][0] = 'Auto France';
       $menu['55.5'][6] = 'dashicons-database-view';
     } );
 
     /*
-    * ORDER DETAILS
+    * ORDER META DETAILS
     */
     add_action( 'woocommerce_admin_order_data_after_order_details', function( $order ){
       include "templates/order_details.php";
@@ -30,6 +31,59 @@ class ORDER_ADMIN extends BASE{
     * LOCATIONS TAXONOMY FOR DROP-OFF & PICK-UP
     */
     add_action( 'init', array( $this, 'addLocationTaxonomy' ) );
+
+    /*
+    * CREATE METABOXES FOR PAYMENTS AND CHECKLIST
+    */
+    add_action( 'add_meta_boxes', function(){
+       add_meta_box( 'wc_payments', 'Payments', array( $this, 'metabox' ), 'shop_order' );
+       add_meta_box( 'wc_checklist', 'Checklist', array( $this, 'metabox' ), 'shop_order' );
+    } );
+
+    /*
+    * PROCESS INFORMATION ON ORDER FORM SUBMIT
+    * META INFORMATION
+    * PAYMENT INFORMATION
+    * CHECKLIST INFORMATION
+    */
+    add_action( 'woocommerce_process_shop_order_meta', function( $order_id ){
+      $fields = array( 'af_meta', 'af_payments', 'af_checklist' );
+
+      // ITERATE THROUGH EACH FIELDS
+      foreach( $fields as $key ){
+
+        // DEFAULT DATA AS ARRAY
+        $data = array();
+
+        if( isset( $_POST[ $key ] ) ){
+
+          // GET DATA FROM USER SELECTION VALUES
+          $data = $_POST[ $key ];
+        }
+
+        // UPDATE TO POST META DATABASE
+        update_post_meta( $order_id, $key, $data );
+      }
+    } );
+
+  }
+
+
+
+  function metabox( $post, $box ){
+
+    if( isset( $box['id'] ) ){
+      switch( $box['id'] ){
+
+        case 'wc_payments':
+          include( 'templates/payments.php' );
+          break;
+
+        case 'wc_checklist':
+          include( 'templates/checklist.php' );
+          break;
+      }
+    }
 
   }
 
@@ -56,29 +110,20 @@ class ORDER_ADMIN extends BASE{
   * LOCATIONS TAXONOMY FOR DROP-OFF & PICK-UP
   */
   function addLocationTaxonomy(){
-
     register_taxonomy( 'location', 'shop_order', array(
-      // Hierarchical taxonomy (like categories)
       'hierarchical' => false,
-      // This array of options controls the labels displayed in the WordPress Admin UI
       'labels' => array(
-        'name' => _x( 'Locations', 'taxonomy general name' ),
-        'singular_name' => _x( 'Location', 'taxonomy singular name' ),
-        'search_items' =>  __( 'Search Locations' ),
-        'all_items' => __( 'All Locations' ),
-        'parent_item' => __( 'Parent Location' ),
+        'name'              => _x( 'Locations', 'taxonomy general name' ),
+        'singular_name'     => _x( 'Location', 'taxonomy singular name' ),
+        'search_items'      =>  __( 'Search Locations' ),
+        'all_items'         => __( 'All Locations' ),
+        'parent_item'       => __( 'Parent Location' ),
         'parent_item_colon' => __( 'Parent Location:' ),
-        'edit_item' => __( 'Edit Location' ),
-        'update_item' => __( 'Update Location' ),
-        'add_new_item' => __( 'Add New Location' ),
-        'new_item_name' => __( 'New Location Name' ),
-        'menu_name' => __( 'Locations' ),
-      ),
-      // Control the slugs used for this taxonomy
-      'rewrite' => array(
-        //'slug' => 'locations', // This controls the base slug that will display before each term
-        //'with_front' => false, // Don't display the category base before "/locations/"
-        //'hierarchical' => true // This will allow URL's like "/locations/boston/cambridge/"
+        'edit_item'         => __( 'Edit Location' ),
+        'update_item'       => __( 'Update Location' ),
+        'add_new_item'      => __( 'Add New Location' ),
+        'new_item_name'     => __( 'New Location Name' ),
+        'menu_name'         => __( 'Locations' ),
       ),
     ) );
   }

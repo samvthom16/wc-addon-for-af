@@ -44,7 +44,7 @@
   $countries_object  =   new WC_Countries();
   $countries         =   $countries_object->__get('countries');
 
-  $countries_states = array_merge( WC()->countries->get_allowed_country_states(), WC()->countries->get_shipping_country_states() );
+  //$countries_states = array_merge( WC()->countries->get_allowed_country_states(), WC()->countries->get_shipping_country_states() );
 
   //$this->test( $states );
 

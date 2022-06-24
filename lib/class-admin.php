@@ -12,45 +12,16 @@ class ADMIN extends BASE{
 
 
 
-    add_action( 'woocommerce_process_shop_order_meta', function( $order_id ){
-
-      //echo "test";
-      //wp_die();
-
-      if( isset( $_POST['af_meta'] ) ){
-        //$this->test( $_POST['af_meta'] );
-        update_post_meta( $order_id, 'af_meta', $_POST['af_meta'] );
-      }
-
-      $payments = array();
-      if( isset( $_POST['af_payments'] ) ){
-        //$this->test( $_POST['af_meta'] );
-        $payments = $_POST['af_payments'];
-      }
-      update_post_meta( $order_id, 'af_payments', $payments );
-
-      $checklist = array();
-      if( isset( $_POST['af_checklist'] ) ){
-        //$this->test( $_POST['af_checklist'] );
-        $checklist = $_POST['af_checklist'];
-      }
-      update_post_meta( $order_id, 'af_checklist', $checklist );
-      //wp_die();
-
-
-    } );
+    
 
 
 
 
-    //add_action( 'woocommerce_order_actions', array( $this, 'add_order_actions' ) );
-
-    //add_action( 'woocommerce_order_action_af_generate_contract', array( $this, 'generateContract' ) );
-
-    //add_action( 'woocommerce_order_action_af_generate_invoice', array( $this, 'generateInvoice' ) );
 
 
-
+    /*
+    * REDIRECT TO NEW CUSTOMER FORM IF THE DEFAULT WOOCOMMERCE CUSTOMER FORM IS VISITED
+    */
     add_action( 'admin_init', function(){
 
       if( is_admin( 'user-edit.php' ) && isset( $_GET['user_id'] ) && $_GET['user_id'] ){
@@ -64,36 +35,15 @@ class ADMIN extends BASE{
           exit;
 
         }
-
       }
-
-
     } );
 
-    add_action( 'add_meta_boxes', function(){
-       add_meta_box( 'wc_payments', 'Payments', array( $this, 'metabox' ), 'shop_order' );
-       add_meta_box( 'wc_checklist', 'Checklist', array( $this, 'metabox' ), 'shop_order' );
-    } );
+
 
 
   }
 
-  function metabox( $post, $box ){
 
-    if( isset( $box['id'] ) ){
-      switch( $box['id'] ){
-
-        case 'wc_payments':
-          include( 'templates/payments.php' );
-          break;
-
-        case 'wc_checklist':
-        include( 'templates/checklist.php' );
-        break;
-      }
-    }
-
-  }
 
   function add_menu(){
 
@@ -135,6 +85,9 @@ class ADMIN extends BASE{
 
   }
 
+
+
+  /*
   function add_order_actions( $actions ){
     $actions = array();
     $actions['af_generate_contract'] = 'Regenerate Contract';
@@ -165,6 +118,7 @@ class ADMIN extends BASE{
     }
 
   }
+  */
 
   function loadAssets(){
     wp_enqueue_script( 'wcaf-repeater', plugins_url( 'assets/js/repeater.js' , dirname(__FILE__) ), array( 'jquery' ), time() );
