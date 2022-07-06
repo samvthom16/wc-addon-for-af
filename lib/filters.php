@@ -142,7 +142,12 @@ add_filter( 'return_place_af_options', 'af_filter_dropdown_delivery_and_return_p
 add_filter( 'delivery_place_af_setting_value', 'af_filter_setting_value_delivery_and_return_place' );
 add_filter( 'return_place_af_setting_value', 'af_filter_setting_value_delivery_and_return_place' );
 add_filter( 'accessories_af_setting_value', 'af_filter_setting_value_accessories' );
-add_filter( 'price_af_setting_value', 'number_format' );
+add_filter( 'price_af_setting_value', function( $price ){
+  if( $price ){
+    return number_format( $price );
+  }
+  return $price;
+} );
 
 add_filter( 'af_data_invoice', function( $data ){
 
