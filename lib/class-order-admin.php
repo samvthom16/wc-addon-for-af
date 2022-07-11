@@ -92,8 +92,9 @@ class ORDER_ADMIN extends BASE{
   */
   function showLinks( $post_id ){
     $docs = array(
-      'order_contract' => 'View Contract',
-      'order_invoice'  => 'View Invoice'
+      'order_contract'  => 'View Contract',
+      'order_statement' => 'View Statement',
+      'order_invoice'   => 'View Invoice'
     );
 
     $version = time();

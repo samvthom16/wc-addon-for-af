@@ -52,9 +52,10 @@ add_filter( 'af_pdf_fields_contract', function( $fields ){
     'mission_check'     => array( 1, 3, 4 ),
     'journalist_check'  => array( 1, 3, 4 ),
 
-    'vehicle'         => array( 3, 4 ),
-    'accessories'     => array( 3, 4 ),
-    'observations'    => array( 3, 4 ),
+    'vehicle'                   => array( 3, 4 ),
+    'accessories_observations'  => array( 3, 4 ),
+    //'accessories'     => array( 3, 4 ),
+    //'observations'    => array( 3, 4 ),
 
     'date_start'      => array( 3, 4 ),
     'date_end'        => array( 3, 4 ),
@@ -84,34 +85,13 @@ add_filter( 'af_pdf_fields_contract', function( $fields ){
 /*
 * PDF FIELDS FOR THE INVOICE
 */
-add_filter( 'af_pdf_fields_invoice', function( $fields ){
+add_filter( 'af_pdf_fields_invoice', 'af_pdf_fields_invoice_statement' );
 
-  $field_slugs = array(
-    'date', 'order_id', 'ref_rep', 'ref_car',
-
-    'name', 'primary_address', 'secondary_address', 'city_state', 'country',
-
-    'vehicle', 'product_description', 'duration', 'accessories',
-
-    'delivery_place', 'date_start', 'delivery_remark',
-
-    'return_place', 'date_end', 'return_remark',
-
-    'price', 'accessories_price', 'discount', 'delivery_fee', 'drop_off_fee', 'total_price',
-
-    'payment_rcvd_amount_1', 'payment_rcvd_date_1', 'payment_rcvd_amount_2', 'payment_rcvd_date_2',
-
-    'balance_due', 'insurance_expiry'
-  );
-
-  foreach( $field_slugs as $field_slug ){
-    $fields[ $field_slug ] = array();
-  }
-
-  $fields['date_end'] = array( 1 );
-
-  return $fields;
-} );
+/*
+* PDF FIELDS FOR THE STATEMENT
+* INHERITING FROM THE INVOICE
+*/
+add_filter( 'af_pdf_fields_statement', 'af_pdf_fields_invoice_statement' );
 
 
 /*
@@ -126,6 +106,13 @@ add_filter( 'af_pdf_filepath_contract', function( $filepath ){
 */
 add_filter( 'af_pdf_filepath_invoice', function( $filepath ){
   return AF_INVOICE_TEMPLATE;
+} );
+
+/*
+* PDF FILEPATH FOR THE STATEMENT
+*/
+add_filter( 'af_pdf_filepath_statement', function( $filepath ){
+  return AF_STATEMENT_TEMPLATE;
 } );
 
 
@@ -149,21 +136,8 @@ add_filter( 'price_af_setting_value', function( $price ){
   return $price;
 } );
 
-add_filter( 'af_data_invoice', function( $data ){
-
-  $data['price'] = $data['subtotal_price'];
-  $data['delivery_remark'] = $data['delivery_place_remark'];
-  $data['return_remark'] = $data['return_place_remark'];
-
-  //echo "<pre>";
-  //print_r( $data );
-  //echo "</pre>";
-
-
-
-  $data['city_state'] = $data['city'] . ', ' . $data['state'];
-  return $data;
-} );
+add_filter( 'af_data_invoice', 'af_data_invoice_statement' );
+add_filter( 'af_data_statement', 'af_data_invoice_statement' );
 
 add_filter( 'af_data_contract', function( $data ){
 
@@ -191,6 +165,16 @@ add_filter( 'af_data_contract', function( $data ){
   $data['passport_check'] = 'yes';
   $data['mobile_check'] = 'yes';
   //$data['home_check'] = 'no';
+
+  $data['delivery_price'] = $data['delivery_fee'];
+  $data['return_price'] = $data['drop_off_fee'];
+  $data['advance_price'] = $data['subtotal_price'];
+
+  $data['accessories_observations'] = $data['accessories'] . ' ' . $data['observations'];
+
+  //echo '<pre>';
+  //print_r( $data );
+  //echo '</pre>';
 
   return $data;
 } );

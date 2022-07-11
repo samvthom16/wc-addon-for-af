@@ -11,6 +11,8 @@ class TEST extends BASE{
     add_action( 'af_test_invoice', array( $this, 'downloadInvoice' ) );
     add_action( 'af_test_order_invoice', array( $this, 'downloadOrderInvoice' ) );
 
+    add_action( 'af_test_order_statement', array( $this, 'downloadOrderStatement' ) );
+
     add_action( 'af_test_contract', array( $this, 'downloadContract' ) );
     add_action( 'af_test_order_contract', array( $this, 'downloadOrderContract' ) );
   }
@@ -73,6 +75,12 @@ class TEST extends BASE{
   function downloadOrderInvoice(){
     if( isset( $_GET[ 'order_id' ] ) ){
       echo ORDER::getInstance()->generateDocument( $_GET[ 'order_id' ], 'invoice' );
+    }
+  }
+
+  function downloadOrderStatement(){
+    if( isset( $_GET[ 'order_id' ] ) ){
+      echo ORDER::getInstance()->generateDocument( $_GET[ 'order_id' ], 'statement' );
     }
   }
 
