@@ -170,7 +170,9 @@ add_filter( 'af_data_contract', function( $data ){
   $data['return_price'] = $data['drop_off_fee'];
   $data['advance_price'] = $data['subtotal_price'];
 
-  $data['accessories_observations'] = $data['accessories'] . ' ' . $data['observations'];
+  $data['accessories_observations'] = $data['accessories'] . "\r\n\r\n" . $data['observations'];
+
+  $data['city'] = $data['city'] . ' (' . $data['state_code'] . ')';
 
   //echo '<pre>';
   //print_r( $data );

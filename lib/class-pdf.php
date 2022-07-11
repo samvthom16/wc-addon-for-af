@@ -13,6 +13,7 @@ class PDF extends BASE{
     $value_fields = array();
     foreach( $fields as $slug => $repeat ){
       if( isset( $values[ $slug ] ) && $values[ $slug ] ){
+        //$value_fields[ $slug ] = $values[ $slug ];
         $value_fields[ $slug ] = strtoupper( $values[ $slug ] );
         foreach( $repeat as $i ){
           $value_fields[ $slug . $i ] = strtoupper( $values[ $slug ] );

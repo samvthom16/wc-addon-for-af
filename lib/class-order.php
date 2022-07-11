@@ -23,7 +23,7 @@ class ORDER extends BASE{
         'Accessories'   => '0'
       );
 
-      // ITERATE THROUGH EACH FEE AND SET THE DEFAULT AMOUNT 
+      // ITERATE THROUGH EACH FEE AND SET THE DEFAULT AMOUNT
       foreach ( $fees as $fee_name => $fee_amount ) {
         $item_fee = new WC_Order_Item_Fee();
         $item_fee->set_name( $fee_name );
@@ -45,6 +45,7 @@ class ORDER extends BASE{
       'secondary_address' => $order->get_billing_address_2(),
       'code_postal'       => $order->get_billing_postcode(),
       'city'              => $order->get_billing_city(),
+      'state_code'        => $order->get_billing_state(),
       'state'             => get_state_name( $order->get_billing_country(), $order->get_billing_state() ),
       'country'           => get_country_name( $order->get_billing_country() )
     );
