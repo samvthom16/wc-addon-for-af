@@ -85,7 +85,7 @@ function af_combine_field( $fields, $data, $seperator = "\r\n" ){
   $combined_data_field = '';
   $i = 0;
   foreach( $fields as $field ){
-    if( isset( $data[ $field ] ) ){
+    if( isset( $data[ $field ] ) && $data[ $field ] ){
       if( $i ) $combined_data_field .= $seperator;
       $combined_data_field .= $data[ $field ];
       $i++;
