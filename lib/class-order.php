@@ -103,7 +103,7 @@ class ORDER extends BASE{
         $data['delivery_fee'] = $fee->get_amount();
       }
       elseif( strpos( strtolower( $fee->get_name() ), 'accessories' ) !== false ){
-        $data['accessories_price'] = $fee->get_amount();
+        $data['accessories_price'] = number_format( $fee->get_amount() );
       }
       else{
         $data['drop_off_fee'] = $fee->get_amount();
