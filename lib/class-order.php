@@ -110,6 +110,7 @@ class ORDER extends BASE{
       }
     }
 
+    $data['discount'] = $order->get_discount_total();
     $data['total_price'] = number_format( $order->get_total() );
     $data['subtotal_price'] = number_format( $order->get_subtotal() );
 

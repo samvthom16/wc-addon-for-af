@@ -121,5 +121,7 @@ function af_data_invoice_statement( $data ){
     }
   }
 
+  //$data['discount'] = 100;
+
   return $data;
 }
