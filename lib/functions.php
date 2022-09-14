@@ -100,12 +100,12 @@ function af_combine_field( $fields, $data, $seperator = "\r\n" ){
 function af_data_invoice_statement( $data ){
 
   //$data['city_state'] = af_combine_field( array( 'city', 'state' ), $data, ', ' );
-  $data['country'] = af_combine_field( array( 'country', 'code_postal' ), $data, ', ' );
-  $data['address_information'] = af_combine_field( array( 'primary_address', 'secondary_address', 'city', 'state', 'country' ), $data );
+  $data['country'] = af_combine_field( array( 'city', 'state_code', 'code_postal' ), $data, ', ' );
+  $data['address_information'] = af_combine_field( array( 'primary_address', 'secondary_address', 'country' ), $data );
 
   $data['delivery_title'] = af_combine_field( array( 'date_start', 'delivery_place' ), $data, ', ' );
   $data['delivery_remark'] = $data['delivery_title'] . "\r\n\r\n" . $data['delivery_place_remark'];
-  $data['return_title'] = af_combine_field( array( 'date_start', 'return_place' ), $data, ', ' );
+  $data['return_title'] = af_combine_field( array( 'date_end', 'return_place' ), $data, ', ' );
   $data['return_remark'] = $data['return_title'] . "\r\n\r\n" . $data['return_place_remark'];
 
 
