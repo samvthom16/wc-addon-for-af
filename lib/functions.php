@@ -112,11 +112,11 @@ function af_data_invoice_statement( $data ){
   // CONCATENATING USD BEFORE ALL THE PRICES
   $data['price'] = $data['subtotal_price'];
   $price_fields = array(
-    'price', 'accessories_price', 'delivery_fee', 'drop_off_fee', 'total_price',
+    'price', 'accessories_price', 'delivery_fee', 'drop_off_fee', 'total_price', 'discount',
     'payment_rcvd_amount_1', 'payment_rcvd_amount_2', 'payment_rcvd_amount_3', 'balance_due'
   );
   foreach( $price_fields as $price_field ){
-    if( isset( $data[ $price_field ] ) ){
+    if( isset( $data[ $price_field ] ) && $data[ $price_field ] ){
       $data[ $price_field ] = 'USD ' . $data[ $price_field ];
     }
   }
