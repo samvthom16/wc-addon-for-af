@@ -121,6 +121,10 @@ function af_data_invoice_statement( $data ){
     }
   }
 
+  $date=date_create( $data['date_start'] );
+  date_sub( $date, date_interval_create_from_date_string("40 days") );
+  $data['date_end'] = date_format($date,"d M Y");
+
   //$data['discount'] = 100;
 
   return $data;

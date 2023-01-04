@@ -93,7 +93,7 @@ add_filter( 'af_pdf_fields_invoice', 'af_pdf_fields_invoice_statement' );
 */
 add_filter( 'af_pdf_fields_statement', function( $fields ){
   $fields = af_pdf_fields_invoice_statement( $fields );
-  unset( $fields['date_end'] );
+  //unset( $fields['date_end'] );
   return $fields;
 } );
 
